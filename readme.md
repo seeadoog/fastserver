@@ -1,27 +1,16 @@
-package fastserver
+## go fasthttp router
 
-import (
-	"fmt"
-	"github.com/gorilla/websocket"
-	"runtime/debug"
-	"testing"
-)
+#### 基于fasthttp 封装的路由功能，支持原生标准库的http 协议转换
 
-// 50，60，50
-func TestServer_Run(t *testing.T) {
+usage：
+
+````go
 	s := NewServer()
 	ng := s.Group("/v1")
-	ng.Use(func(ctx *Context) {
-
-	})
 
 	ng.Method("POST", "/iast", func(ctx *Context) {
 		ctx.AbortWithStatusJson(200, H{"yes": "iat"})
 	})
-
-	//ng.Method("POST", "/iat", func(ctx *Context) {
-	//	ctx.AbortWithStatusJson(200,H{"yes":"iat"})
-	//})
 
 	ng.Method("GET", "/tsts", func(ctx *Context) {
 		panic("ser")
@@ -42,14 +31,6 @@ func TestServer_Run(t *testing.T) {
 			Message: fmt.Sprintf("dx:%s,ok:%v:apth:%s", dx, ok, ctx.Path),
 		})
 	})
-
-	s.NotFound(func(ctx *Context) {
-		//ctx.AbortWithStatusJson(302,Message{
-		//	"redirect",
-		//})
-		ctx.FastCtx.Redirect("http://10.1.87.70:8000", 302)
-	})
-
 	g2 := s.Group("/v3")
 
 	g2.Use(func(ctx *Context) {
@@ -98,7 +79,4 @@ func TestServer_Run(t *testing.T) {
 
 	})
 	panic(s.Run(":8080"))
-}
-
-
-
+````
