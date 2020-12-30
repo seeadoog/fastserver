@@ -17,7 +17,7 @@ func TestServer_Run(t *testing.T) {
 
 	})
 
-	ng.Method("POST", "/iat", func(ctx *Context) {
+	ng.Method("POST", "/iast", func(ctx *Context) {
 		ctx.AbortWithStatusJson(200, H{"yes": "iat"})
 	})
 
@@ -25,7 +25,7 @@ func TestServer_Run(t *testing.T) {
 	//	ctx.AbortWithStatusJson(200,H{"yes":"iat"})
 	//})
 
-	ng.Method("GET", "/tts", func(ctx *Context) {
+	ng.Method("GET", "/tsts", func(ctx *Context) {
 		panic("ser")
 		fmt.Println("/tts")
 		ctx.AbortWithStatusJson(200, H{"yes": "tts"})
@@ -67,12 +67,12 @@ func TestServer_Run(t *testing.T) {
 	})
 
 	g2.Use(func(ctx *Context) {
-		if string(ctx.FastCtx.Path()) == "/v2/iat" {
+		if string(ctx.FastCtx.Path()) == "/v2/isat" {
 			panic("invalid path")
 		}
 	})
 
-	g2.Method("GET", "/iat", func(ctx *Context) {
+	g2.Method("GET", "/isat", func(ctx *Context) {
 		ctx.AbortWithStatusJson(200, H{"ok": "yes"})
 	})
 
@@ -104,14 +104,3 @@ func TestServer_Run(t *testing.T) {
 
 
 
-func TestDefaultRecover(ty *testing.T) {
-	t := struct {
-		time.Time
-		N int
-	}{
-		time.Date(2020, 12, 20, 0, 0, 0, 0, time.UTC),
-		5,
-	}
-	m, _ := json.Marshal(t)
-	fmt.Printf("%s", m)
-}

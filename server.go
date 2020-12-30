@@ -2,7 +2,6 @@ package fastserver
 
 import (
 	"fmt"
-	"git.iflytek.com/AIaaS/nameServer/tools/str"
 	"github.com/valyala/fasthttp"
 	"net"
 	"os"
@@ -12,13 +11,16 @@ import (
 	"sync"
 	"syscall"
 	"time"
+	"unsafe"
 )
 
 type Message struct {
 	Message string `json:"message"`
 }
 
-var tostring = str.ToString
+func tostring(b []byte)string{
+	return *(*string)(unsafe.Pointer(&b))
+}
 
 func (c HandlersChain) Last() Handler {
 	if length := len(c); length > 0 {
