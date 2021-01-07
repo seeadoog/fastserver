@@ -155,6 +155,10 @@ func (r *RouterGroup) OPTION(path string, handler Handler) {
 	r.Method("OPTION", path, handler)
 }
 
+func (r *RouterGroup)Any(){
+
+}
+
 //创建一个group，可以构建新的拦截器链路，新的group 会继承父拦截器（handler）
 func (r *RouterGroup) Group(path string) *RouterGroup {
 	g := &RouterGroup{

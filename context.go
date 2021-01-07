@@ -2,6 +2,7 @@ package fastserver
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"github.com/valyala/fasthttp"
 	"net"
@@ -69,23 +70,22 @@ func (c *Context) Redirect(uri string, statusCode int) {
 
 }
 // 获取标准的http request
-func (c *Context) StdHttpRequest() (*http.Request, error) {
+func (c *Context) StdHttpRequest() *http.Request {
 	fc := c.FastCtx
-	req, err := http.NewRequest(c.Method, c.RequestURI, nil)
-	if err != nil {
-		return nil, err
-	}
+	req, _ := http.NewRequest(c.Method, c.RequestURI, bytes.NewReader(c.FastCtx.PostBody()))
+
 	fc.Request.Header.VisitAll(func(key, value []byte) {
 		k := tostring(key)
 		v := tostring(value)
 		req.Header.Set(k, v)
 	})
-	return req, nil
+	return req
 }
 // 获取标准的 http responseWriter
 func (c *Context) StdResponseWriter() http.ResponseWriter {
 	return newHttpRespW(c.FastCtx)
 }
+
 
 type H map[string]interface{}
 

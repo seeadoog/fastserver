@@ -14,7 +14,6 @@ func TestServer_Run(t *testing.T) {
 	ng.Use(func(ctx *Context) {
 
 	})
-
 	ng.Method("POST", "/iast", func(ctx *Context) {
 		ctx.AbortWithStatusJson(200, H{"yes": "iat"})
 	})
@@ -77,7 +76,7 @@ func TestServer_Run(t *testing.T) {
 	g2.GET("/websocket", func(c *Context) {
 		//fc:=c.FastCtx
 		wg := websocket.Upgrader{}
-		req, _ := c.StdHttpRequest()
+		req := c.StdHttpRequest()
 		conn, err := wg.Upgrade(c.StdResponseWriter(), req, nil)
 		if err != nil {
 			c.AbortWithStatusJson(400, Message{
