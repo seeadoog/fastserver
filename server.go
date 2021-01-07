@@ -37,12 +37,24 @@ type Server struct {
 	closed          bool
 	stopWg          sync.WaitGroup // 用于优雅启动停止时，等待所有的请求处理完毕时再退出
 	notFoundHandler HandlersChain  // 找不到路由时默认执行的路由
+	stopHandler func(sig os.Signal)
+	stopSignals []syscall.Signal
 }
+
+
 
 func (s *Server) stopWgCounter(ctx *Context) {
 	s.stopWg.Add(1)
 	ctx.Next()
 	s.stopWg.Done()
+}
+
+func (s *Server)SetStopHandler(stop func(sig os.Signal)){
+	s.stopHandler = stop
+}
+
+func (s *Server)AddStopSignals(signals ...syscall.Signal){
+	s.stopSignals = append(s.stopSignals,signals...)
 }
 
 func NewServer() *Server {
@@ -95,12 +107,19 @@ func (s *Server) Run(addr string) error {
 	}()
 	//监听退出信号
 	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGSTOP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+	stopSignals:=  []os.Signal{ syscall.SIGSTOP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT}
+	for _, stopSignal := range s.stopSignals {
+		stopSignals = append(stopSignals,stopSignal)
+	}
+	signal.Notify(sigChan,stopSignals...)
 	sig := <-sigChan
 	fmt.Printf("server receive signal:%v ,close listener and start to stop,%v\n", sig, time.Now().String())
 	s.closed = true
 	// 获取到退出信号时，关闭listener，不再接受新的请求，并且等待所有的请求处理完毕后退出
 	ls.Close()
+	if s.stopHandler != nil{
+		s.stopHandler(sig)
+	}
 	s.stopWg.Wait()
 	fmt.Printf("server successful stoped  %v \n", time.Now().String())
 	return nil
