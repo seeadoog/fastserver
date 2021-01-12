@@ -69,6 +69,7 @@ func (c *Context) Redirect(uri string, statusCode int) {
 	c.FastCtx.Redirect(uri, statusCode)
 
 }
+
 // 获取标准的http request
 func (c *Context) StdHttpRequest() *http.Request {
 	fc := c.FastCtx
@@ -81,12 +82,19 @@ func (c *Context) StdHttpRequest() *http.Request {
 	})
 	return req
 }
+
 // 获取标准的 http responseWriter
 func (c *Context) StdResponseWriter() http.ResponseWriter {
 	return newHttpRespW(c.FastCtx)
 }
 
+func (c *Context) SetResponseHeader(k, v string) {
+	c.FastCtx.Response.Header.Set(k, v)
+}
 
+func (c *Context) GetRequestHeader(k string) string {
+	return tostring(c.FastCtx.Request.Header.Peek(k))
+}
 
 type H map[string]interface{}
 
