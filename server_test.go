@@ -96,6 +96,15 @@ func TestServer_Run(t *testing.T) {
 		c.Abort()
 
 	})
+
+	type Value struct {
+		ClientIp string
+	}
+
+
+	g2.GET("/testVal", func(ctx *Context) {
+
+	})
 	panic(s.Run(":8080"))
 }
 

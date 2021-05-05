@@ -17,6 +17,7 @@ type Context struct {
 	handlers   []Handler
 	Params     Params
 	RequestURI string
+	value interface{}
 	//values map[string]interface{}
 }
 
@@ -28,6 +29,7 @@ func (c *Context) Run() {
 	}
 }
 
+
 func (c *Context) Next() {
 	c.idx++
 	c.Run()
@@ -35,9 +37,18 @@ func (c *Context) Next() {
 func (c *Context) reset() {
 	c.Params = c.Params[:0]
 	c.idx = 0
+	c.value = nil
 }
 func (c *Context) Abort() {
 	c.idx = len(c.handlers)
+}
+//clearFunc ,value should be clear
+func (c *Context)SetUserValueObj(v interface{}){
+	c.value = v
+}
+
+func (c *Context)GetUserValueObj()interface{}{
+	return c.value
 }
 
 func (c *Context) AbortWithStatusJson(status int, o interface{}) error {
@@ -55,6 +66,7 @@ func (c *Context) AbortWithData(status int, data []byte) {
 	c.Abort()
 	c.FastCtx.SetStatusCode(status)
 	c.FastCtx.Write(data)
+
 }
 
 func (c *Context) SetUserValue(key string, val interface{}) {
@@ -67,7 +79,6 @@ func (c *Context) GetUserValue(key string) interface{} {
 
 func (c *Context) Redirect(uri string, statusCode int) {
 	c.FastCtx.Redirect(uri, statusCode)
-
 }
 
 // 获取标准的http request
